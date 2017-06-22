@@ -1,6 +1,7 @@
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 
 def f(x, y):
@@ -87,6 +88,24 @@ class ContinuousGeneticAlgorithm:
     def evolute(self):
         """Main method of evolution finding"""
         self.generate_start_population()
+        """This is just animation block"""
+        delta = 0.1
+        x = np.arange(0, 10.0, delta)
+        y = np.arange(0, 10, delta)
+        X, Y = np.meshgrid(x, y)
+        Z = self.func(X, Y)
+        fig = plt.figure()
+        CS = plt.contour(X, Y, Z, corner_mask=True)
+        ims = []
+        xs=self.population[:, 0]
+        ys=self.population[:, 1]
+        plt.plot(xs.tolist(), ys.tolist(), 'bo', ms=15)
+        plt.clabel(CS, inline=1, fontsize=10)
+        plt.colorbar()
+        fig.set_size_inches(15, 10)
+        """This is just animation block"""
+
+
         print(print(self.population))
         for n in range(self.max_generations):
             population = copy.copy(self.population)
@@ -96,7 +115,14 @@ class ContinuousGeneticAlgorithm:
             mutated_new_population = np.array([self.mutation(chromosome) for chromosome in new_populaion])
             print("new pop: ",mutated_new_population)
             self.population=mutated_new_population
+            xs = self.population[:, 0]
+            ys = self.population[:, 1]
+            im = plt.plot(xs.tolist(), ys.tolist(), 'ro', ms=20)
+            ims.append(im)
+        ani = animation.ArtistAnimation(fig, ims, interval=150, blit=True,
+                                        repeat_delay=1000, repeat=False)
 
+        plt.show()
 
 
 
