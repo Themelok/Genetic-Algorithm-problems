@@ -29,8 +29,8 @@ class ContinuousGeneticAlgorithm:
         self.population_range = pop_range       # Function Definition Area or just range of finding :)
         self.npar = 2                           # Number of optimization variables
         self.population_size = pop_size         # Population size, 12 by default
-        self.max_generations =100               # Count of generations
-        self.keep = self.population_size//2     # Count of parents
+        self.max_generations = 100              # Count of generations
+        self.keep = self.population_size // 2   # Count of parents
         self.prob = np.flipud(np.arange(1, self.keep + 1) / np.sum(np.arange(1, self.keep + 1)))
         self.odds = np.insert(np.cumsum(self.prob), 0, 0)
 
@@ -65,24 +65,27 @@ class ContinuousGeneticAlgorithm:
                     pa.append(id - 1)
         for i in range(M):
             """Here is crossover. crosover_point is number of gen in i's chromosome(parent)"""
-            b=np.random.rand()
-            crossover_point = np.random.randint(0,self.npar)
+            b = np.random.rand()
+            crossover_point = np.random.randint(0, self.npar)
             mam = copy.copy(parents[ma[i]])
             pap = copy.copy(parents[pa[i]])
             mam_xy = mam[crossover_point]
             pap_xy = pap[crossover_point]
-            mam[crossover_point]=(1-b)*mam_xy+b*pap_xy
+            mam[crossover_point] = (1 - b) * mam_xy + b * pap_xy
             offsprings.append(mam.tolist())
-            pap[crossover_point]=(1-b)*pap_xy+b*mam_xy
+            pap[crossover_point] = (1 - b) * pap_xy + b * mam_xy
             offsprings.append(pap.tolist())
         return offsprings
+
     def mutation(self, chromosome):
-        """Implements mutation of chromosomes with probability self.mutation_probability"""
+        """Implements mutation of chromosomes with probability
+         self.mutation_probability"""
         r = np.random.rand()
-        if r <=self.mutation_probability:
-            mutation_gen = np.random.randint(0,self.npar)
-            chromosome[mutation_gen]= (self.population_range[1] - self.population_range[0])*np.random.rand()\
-                                      +self.population_range[0]
+        if r <= self.mutation_probability:
+            mutation_gen = np.random.randint(0, self.npar)
+            chromosome[mutation_gen] = (self.population_range[1] - self.population_range[0]) \
+                                       * np.random.rand() \
+                                       + self.population_range[0]
         return chromosome
 
     def evolute(self):
@@ -97,24 +100,23 @@ class ContinuousGeneticAlgorithm:
         fig = plt.figure()
         CS = plt.contour(X, Y, Z, corner_mask=True)
         ims = []
-        xs=self.population[:, 0]
-        ys=self.population[:, 1]
+        xs = self.population[:, 0]
+        ys = self.population[:, 1]
         plt.plot(xs.tolist(), ys.tolist(), 'bo', ms=15)
         plt.clabel(CS, inline=1, fontsize=10)
         plt.colorbar()
         fig.set_size_inches(15, 10)
         """This is just animation block"""
 
-
         print(print(self.population))
         for n in range(self.max_generations):
             population = copy.copy(self.population)
             parents = self.selection(population)
             offsprings = self.mating(parents)
-            new_populaion=np.concatenate((parents,offsprings))
+            new_populaion = np.concatenate((parents, offsprings))
             mutated_new_population = np.array([self.mutation(chromosome) for chromosome in new_populaion])
-            print("new pop: ",mutated_new_population)
-            self.population=mutated_new_population
+            print("new pop: ", mutated_new_population)
+            self.population = mutated_new_population
             xs = self.population[:, 0]
             ys = self.population[:, 1]
             im = plt.plot(xs.tolist(), ys.tolist(), 'ro', ms=20)
@@ -125,7 +127,6 @@ class ContinuousGeneticAlgorithm:
         plt.show()
 
 
-
-
-g=ContinuousGeneticAlgorithm(f, pop_range=(0,10))
-res = g.evolute()
+if __name__ == '__main__':
+    g = ContinuousGeneticAlgorithm(f, pop_range=(0, 10))
+    res = g.evolute()
